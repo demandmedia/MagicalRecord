@@ -724,34 +724,5 @@ static NSUInteger defaultBatchSize = kActiveRecordDefaultBatchSize;
     return resultValue;    
 }
 
-+ (NSArray *) aggregateOperation:(NSString *)function onAttribute:(NSString *)attributeName withPredicate:(NSPredicate *)predicate groupBy:(NSString*)groupingKeyPath inContext:(NSManagedObjectContext *)context 
-{
-    NSExpression *ex = [NSExpression expressionForFunction:function 
-                                                 arguments:[NSArray arrayWithObject:[NSExpression expressionForKeyPath:attributeName]]];
-    
-    NSExpressionDescription *ed = [[NSExpressionDescription alloc] init];
-    [ed setName:@"result"];
-    [ed setExpression:ex];
-    
-    // determine the type of attribute, required to set the expression return type    
-    NSAttributeDescription *attributeDescription = [[[self entityDescription] attributesByName] objectForKey:attributeName];
-    [ed setExpressionResultType:[attributeDescription attributeType]];    
-    NSArray *properties = [NSArray arrayWithObjects:groupingKeyPath, ed, nil];
-    [ed release], ed = nil;
-    
-    NSFetchRequest *request = [self requestAllWithPredicate:predicate inContext:context];
-    [request setPropertiesToFetch:properties];
-    [request setResultType:NSDictionaryResultType];
-    [request setPropertiesToGroupBy:[NSArray arrayWithObject:groupingKeyPath]];
-    
-    NSArray *results = [self executeFetchRequest:request];
-    return results;    
-}
-
-+ (NSArray *) aggregateOperation:(NSString *)function onAttribute:(NSString *)attributeName withPredicate:(NSPredicate *)predicate groupBy:(NSString*)groupingKeyPath
-{
-    return [self aggregateOperation:function onAttribute:attributeName withPredicate:predicate groupBy:groupingKeyPath inContext:[NSManagedObjectContext defaultContext]];
-}
-
 
 @end
