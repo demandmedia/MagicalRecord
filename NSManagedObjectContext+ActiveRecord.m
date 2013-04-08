@@ -97,7 +97,12 @@ static NSString const * kActiveRecordManagedObjectContextKey = @"ActiveRecord_NS
 	ARLog(@"Merging changes to %@context%@", 
           self == [NSManagedObjectContext defaultContext] ? @"*** DEFAULT *** " : @"",
           ([NSThread isMainThread] ? @" *** on Main Thread ***" : @""));
-	[self mergeChangesFromContextDidSaveNotification:notification];
+	@try {
+        [self mergeChangesFromContextDidSaveNotification:notification];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"WARNING - Caught an exception while calling [mergeChangesFromContextDidSaveNotification:]: %@", exception);
+    }
 }
 
 - (void) mergeChangesOnMainThread:(NSNotification *)notification
